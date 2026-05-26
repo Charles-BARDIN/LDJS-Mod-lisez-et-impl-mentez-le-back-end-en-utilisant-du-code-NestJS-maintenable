@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
@@ -17,6 +18,17 @@ async function bootstrap() {
 
   // Réponses d'erreur uniformisées au format { message }
   app.useGlobalFilters(new HttpExceptionFilter());
+
+  // Documentation OpenAPI (Swagger), accessible sans authentification.
+  // Le bouton « Authorize » permet de tester les routes protégées avec un token JWT.
+  const config = new DocumentBuilder()
+    .setTitle('ChâTop API')
+    .setDescription("API REST de l'application de location saisonnière ChâTop")
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, document);
 
   await app.listen(3001);
 }
