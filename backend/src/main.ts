@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,6 +15,9 @@ async function bootstrap() {
   // Validation automatique des DTO et suppression des champs non déclarés
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
+  // Réponses d'erreur uniformisées au format { message }
+  app.useGlobalFilters(new HttpExceptionFilter());
+
   await app.listen(3001);
 }
-bootstrap();
+void bootstrap();
